@@ -1,0 +1,58 @@
+# stage1 train luad
+python 1_train_stage1.py --dataset luad --trainroot F:/dataset/Med/HistoSeg/LUAD-HistoSeg/train/ --testroot F:/dataset/Med/HistoSeg/LUAD-HistoSeg/test/img --max_epoches 20 --batch_size 16 --lr 0.005
+# stage1 train bcss
+python 1_train_stage1.py --dataset bcss --trainroot F:/dataset/Med/HistoSeg/BCSS-WSSS/train/ --testroot F:/dataset/Med/HistoSeg/BCSS-WSSS/test/img --max_epoches 20 --batch_size 16 --lr 0.005
+
+# pesudo mask luad-luad
+python 2_generate_PM.py --dataroot F:/dataset/Med/HistoSeg/LUAD-HistoSeg --dataset luad --weights checkpoints/stage1_checkpoint_trained_on_luad_lr0.005.pth
+# pesudo mask bcss-bcss
+python 2_generate_PM.py --dataroot F:/dataset/Med/HistoSeg/BCSS-WSSS --dataset bcss --weights checkpoints/stage1_checkpoint_trained_on_bcss_lr0.005.pth
+# pesudo mask luad-bcss
+python 2_generate_PM_l2b.py --dataroot F:/dataset/Med/HistoSeg/BCSS-WSSS --dataset luad --weights checkpoints/stage1_checkpoint_trained_on_luad_lr0.005.pth
+# pesudo mask bcss-luad
+python 2_generate_PM_b2l.py --dataroot F:/dataset/Med/HistoSeg/LUAD-HistoSeg --dataset bcss --weights checkpoints/stage1_checkpoint_trained_on_bcss_lr0.005.pth
+
+# stage2 train luad-luad
+python 3_train_stage2.py --dataset luad --dataroot F:/dataset/Med/HistoSeg/LUAD-HistoSeg --epochs 20 --Is_GM True --resume_stage1 checkpoints/stage1_checkpoint_trained_on_luad_lr0.005.pth --resume init_weights/deeplab-resnet.pth.tar --gpu-ids 0
+# stage2 train bcss-bcss
+python 3_train_stage2.py --dataset bcss --dataroot F:/dataset/Med/HistoSeg/BCSS-WSSS --epochs 20 --Is_GM True --resume_stage1 checkpoints/stage1_checkpoint_trained_on_bcss_lr0.005.pth --resume init_weights/deeplab-resnet.pth.tar --gpu-ids 0
+# stage2 train luad-bcss
+python 3_train_stage2_l2b.py --dataset luad --dataroot F:/dataset/Med/HistoSeg/BCSS-WSSS --epochs 20 --Is_GM True --resume_stage1 checkpoints/stage1_checkpoint_trained_on_luad_lr0.005.pth --resume init_weights/deeplab-resnet.pth.tar --gpu-ids 0 --lr 0.005 --savepath results_l2b
+# stage2 train bcss-luad
+python 3_train_stage2_b2l.py --dataset bcss --dataroot F:/dataset/Med/HistoSeg/LUAD-HistoSeg --epochs 20 --Is_GM True --resume_stage1 checkpoints/stage1_checkpoint_trained_on_bcss_lr0.005.pth --resume init_weights/deeplab-resnet.pth.tar --gpu-ids 0 --lr 0.005 --savepath results_b2l
+
+
+
+
+#### DG
+# stage1 train luad
+python 1_train_stage1.py --dataset dg --trainroot F:/dataset/Med/HistoSeg/LUAD-HistoSeg_dg/train/ --testroot F:/dataset/Med/HistoSeg/LUAD-HistoSeg_dg/test/img --max_epoches 20 --batch_size 16 --lr 0.005 --n_class 2
+# stage1 train bcss
+python 1_train_stage1.py --dataset dg --trainroot F:/dataset/Med/HistoSeg/BCSS-WSSS_dg/train/ --testroot F:/dataset/Med/HistoSeg/BCSS-WSSS_dg/test/img --max_epoches 20 --batch_size 16 --lr 0.005 --n_class 2
+
+# pesudo mask luad-bcss
+python 2_generate_PM.py --dataroot F:/dataset/Med/HistoSeg/BCSS-WSSS_dg --dataset dg --weights checkpoints/stage1_checkpoint_trained_on_LUAD.pth --n_class 2
+# pesudo mask bcss-luad
+python 2_generate_PM.py --dataroot F:/dataset/Med/HistoSeg/LUAD-HistoSeg_dg --dataset dg --weights checkpoints/stage1_checkpoint_trained_on_BCSS.pth --n_class 2
+# pesudo mask luad-wsss
+python 2_generate_PM.py --dataroot F:/dataset/Med/HistoSeg/WSSS4LUAD_dg --dataset dg --weights checkpoints/stage1_checkpoint_trained_on_LUAD.pth --n_class 2
+# pesudo mask bcss-wsss
+python 2_generate_PM.py --dataroot F:/dataset/Med/HistoSeg/WSSS4LUAD_dg --dataset dg --weights checkpoints/stage1_checkpoint_trained_on_BCSS.pth --n_class 2
+
+# stage2 train luad-bcss
+python 3_train_stage2.py --dataset dg --dataroot F:/dataset/Med/HistoSeg/BCSS-WSSS_dg --epochs 20 --Is_GM True --resume_stage1 checkpoints/stage1_checkpoint_trained_on_LUAD.pth --resume init_weights/deeplab-resnet.pth.tar --gpu-ids 0 --lr 0.005 --savepath results_l2b --n_class 2
+# stage2 train bcss-luad
+python 3_train_stage2.py --dataset dg --dataroot F:/dataset/Med/HistoSeg/LUAD-HistoSeg_dg --epochs 20 --Is_GM True --resume_stage1 checkpoints/stage1_checkpoint_trained_on_BCSS.pth --resume init_weights/deeplab-resnet.pth.tar --gpu-ids 0 --lr 0.005 --savepath results_b2l --n_class 2
+# stage2 train luad-wsss
+python 3_train_stage2.py --dataset dg --dataroot F:/dataset/Med/HistoSeg/WSSS4LUAD_dg --epochs 20 --Is_GM True --resume_stage1 checkpoints/stage1_checkpoint_trained_on_LUAD.pth --resume init_weights/deeplab-resnet.pth.tar --gpu-ids 0 --lr 0.005 --savepath results_l2w --n_class 2
+# stage2 train bcss-wsss
+python 3_train_stage2.py --dataset dg --dataroot F:/dataset/Med/HistoSeg/WSSS4LUAD_dg --epochs 20 --Is_GM True --resume_stage1 checkpoints/stage1_checkpoint_trained_on_BCSS.pth --resume init_weights/deeplab-resnet.pth.tar --gpu-ids 0 --lr 0.005 --savepath results_b2w --n_class 2
+
+# stage2 test luad-bcss
+python 4_test_stage2.py --dataset dg --dataroot F:/dataset/Med/HistoSeg/BCSS-WSSS_dg --epochs 20 --Is_GM True --resume_stage1 checkpoints/stage1_checkpoint_trained_on_LUAD.pth --resume init_weights/deeplab-resnet.pth.tar --gpu-ids 0 --lr 0.005 --savepath results_l2b --n_class 2 --checkpoint
+# stage2 test bcss-luad
+python 4_test_stage2.py --dataset dg --dataroot F:/dataset/Med/HistoSeg/LUAD-HistoSeg_dg --epochs 20 --Is_GM True --resume_stage1 checkpoints/stage1_checkpoint_trained_on_BCSS.pth --resume init_weights/deeplab-resnet.pth.tar --gpu-ids 0 --lr 0.005 --savepath results_b2l --n_class 2 --checkpoint
+# stage2 test luad-wsss
+python 4_test_stage2.py --dataset dg --dataroot F:/dataset/Med/HistoSeg/WSSS4LUAD_dg --epochs 20 --Is_GM True --resume_stage1 checkpoints/stage1_checkpoint_trained_on_LUAD.pth --resume init_weights/deeplab-resnet.pth.tar --gpu-ids 0 --lr 0.005 --savepath results_l2w --n_class 2 --checkpoint
+# stage2 test bcss-wsss
+python 4_test_stage2.py --dataset dg --dataroot F:/dataset/Med/HistoSeg/WSSS4LUAD_dg --epochs 20 --Is_GM True --resume_stage1 checkpoints/stage1_checkpoint_trained_on_BCSS.pth --resume init_weights/deeplab-resnet.pth.tar --gpu-ids 0 --lr 0.005 --savepath results_b2w --n_class 2 --checkpoint
