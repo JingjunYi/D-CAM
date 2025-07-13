@@ -18,17 +18,17 @@ Weakly-supervised medical image segmentation with only image-level annotation is
 - To train the stage1 and stage2, you should download the pretrained weight of ResNet-38 and DeepLab V3+ from [baidu cloud](https://pan.baidu.com/s/1sQp4Na-883pSxgMWK4wcRQ) (with code **nylc**) or [onedrive](https://1drv.ms/u/s!AgOtqK2ZncKlgoRobleElpBC5rbf7A?e=bDfqks) and put them in the **init_weights** folder.
 - We use LUAD-HistoSeg and BCSS-WSSS for training.
 
-#### 1、Train the classification model with the image-level label: 
+#### 1、Train the classification model: 
 
 ```
 python 1_train_stage1.py --dataset luad --trainroot datasets/LUAD-HistoSeg/train/ --testroot dataset/LUAD-HistoSeg/test/ --max_epoches 20 --batch_size 20
 ```
-#### 2、Generate multi-layers pesudo mask by classification model: 
+#### 2、Generate pesudo mask: 
 
 ```
 python 2_generate_PM.py --dataroot datasets/LUAD-HistoSeg --dataset luad --weights checkpoints/stage1_checkpoint_trained_on_luad.pth
 ```
-#### 3、Train the segmentation model with multi-layer pesudo masks: 
+#### 3、Train the segmentation model: 
 
 ```
 python 3_train_stage2.py --dataset luad --dataroot datasets/LUAD-HistoSeg --epochs 20 -- Is_GM True --resume_stage1 checkpoints/stage1_checkpoint_trained_on_luad.pth --resume init_weights/deeplab-resnet.pth.tar
